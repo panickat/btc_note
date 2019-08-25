@@ -1,5 +1,4 @@
-from os import system
-import os
+import subprocess
 import requests
 import json
 
@@ -10,15 +9,21 @@ def req_bitcoin():
     global usd,mxn,usd_move
     usd = int(rq["bpi"]["USD"]["rate_float"])
     mxn = int(rq["bpi"]["MXN"]["rate_float"])
-    usd_move = 350
+    usd_move = 1
+    print("request: "+str(usd))
+
+def get_env_usd():
+    completed = subprocess.run(
+        ["launchctl", "getenv", "usd"], stdout=subprocess.PIPE)
+    return int(completed.stdout.decode('utf-8'))
 
 def price_move():
     req_bitcoin()
-    last_usd = system("launchctl getenv usd") # error devuelve siempre 0
+    last_usd = get_env_usd()
+    print("price_move: "+ str(last_usd))
     
     if (last_usd == 0) or (usd > last_usd + usd_move) or (usd < last_usd - usd_move):
-        set_env_usd = "launchctl setenv usd '%s'" % (usd)
-        system(set_env_usd)
+        subprocess.run(["launchctl","setenv","usd",str(usd)])
         return True
     else:
         return False
@@ -29,6 +34,7 @@ def speech():
     _mxn = str(mxn)[0:3]+"000"
 
     txt = "bitcoin en %s dolares y %s pesos" % (_usd, _mxn)
-    system("say -r 190 "+txt)
-
-if price_move(): speech()
+    subprocess.run("say -r 190 "+txt)
+    subprocess.run(["say","-r 190",txt])
+    
+speech() if price_move() else print("no cambio esta en: $" + str(usd))
