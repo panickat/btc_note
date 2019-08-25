@@ -28,13 +28,12 @@ def price_move():
     else:
         return False
 
-
 def speech():
     _usd = str(usd)[0:3]+"00"
     _mxn = str(mxn)[0:3]+"000"
 
-    txt = "bitcoin en %s dolares y %s pesos" % (_usd, _mxn)
-    subprocess.run("say -r 190 "+txt)
+    txt = "'bitcoin en %s dolares, en %s pesos, con variación de: '" % (
+        _usd, _mxn)
     subprocess.run(["say","-r 190",txt])
     
 speech() if price_move() else print("no cambio esta en: $" + str(usd))
