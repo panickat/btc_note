@@ -28,3 +28,7 @@ Agregar atrea a cronjob
 crontab -e
 
 * * * * * /Users/panic/.local/share/virtualenvs/py-OPFHogRf/bin/python /Users/panic/dev/py/alarm.py >/Users/panic/dev/py/log/stdout.log 2>/Users/panic/dev/py/log/stderr.log
+
+Pendientes:
+cx_Freeze
+py2app
