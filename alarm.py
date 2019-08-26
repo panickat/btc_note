@@ -9,8 +9,8 @@ def req_bitcoin_val():
     global live_usd,live_mxn,usd_move
     live_usd = int(rq["bpi"]["USD"]["rate_float"])
     live_mxn = int(rq["bpi"]["MXN"]["rate_float"])
-    usd_move = 1
-    print("request: "+str(live_usd))
+    usd_move = 300
+    print("req_bitcoin_val(): live_usd $"+str(live_usd))
 
 def get_usd_env():
     completed = subprocess.run(["launchctl", "getenv", "usd"], stdout=subprocess.PIPE)
@@ -28,7 +28,7 @@ def set_usd_env():
 def price_move():
     req_bitcoin_val()
     last_usd = get_usd_env()
-    print("price_move: "+ str(last_usd))
+    print("price_move(): last_usd $"+ str(last_usd))
     
     if live_usd >= last_usd + usd_move:
         return {"move": True,"variation": live_usd - last_usd, "trend": "alsa"}
@@ -42,11 +42,11 @@ def speech(price_moved):
     _usd = str(live_usd)[0:3]+"00"
     _mxn = str(live_mxn)[0:3]+"000"
 
-    txt = "'El, bitcoin esta! en %s dolares, en %s pesos, con variación de: %s dolares' a la %s" % (
+    txt = "'El, bitcoin esta! en %s dolares. y en %s pesos, con variación de: %s dolares' a la %s" % (
         _usd, _mxn, price_moved["variation"], price_moved["trend"])
     subprocess.run(["say","-r 185",txt])
     
-    print("variacion de: " + str(price_moved["variation"]))
+    print("variacion de: $" + str(price_moved["variation"]) + " a la " + price_moved["trend"])
 
 
 price_moved = price_move()
