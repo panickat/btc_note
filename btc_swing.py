@@ -3,7 +3,7 @@ import requests
 import json
 import time
 
-usd_swing = 1
+usd_swing = 300
 last_usd = 0
 live_usd = 0
 live_mxn = 0

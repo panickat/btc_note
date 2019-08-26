@@ -25,10 +25,10 @@ pipenv --py
 Agregar atrea a cronjob
     * * * * * cada minuto
     https://crontab.guru/#01_*_*_*_*
-crontab -e
 
+crontab -e
+# correr .py
 * * * * * /Users/panic/.local/share/virtualenvs/py-OPFHogRf/bin/python /Users/panic/dev/py/alarm.py >/Users/panic/dev/py/log/stdout.log 2>/Users/panic/dev/py/log/stderr.log
 
-Pendientes:
-cx_Freeze
-py2app
+# correr freeze app echa con py2app
+* * * * * /Users/panic/dev/py/dist/btc_swing.app/Contents/MacOS/btc_swing >/Users/panic/dev/py/log/stdout.log 2>/Users/panic/dev/py/log/stderr.log
