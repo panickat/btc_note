@@ -35,7 +35,7 @@ def price_move():
     elif live_usd <= last_usd - usd_move:
         return {"move": True, "variation": last_usd - live_usd, "trend": "baja"}
     else:
-        return {"move": False, "variation": last_usd - live_usd, "trend": "nada"}
+        return {"move": False, "variation": last_usd - live_usd, "trend": "nada"} # revisar aquie entran los incrementos negativos
 
 
 def speech(price_moved):
@@ -51,4 +51,5 @@ def speech(price_moved):
 
 price_moved = price_move()
 speech(price_moved) if price_moved["move"] else print(
-    "no cambio esta en: $" + str(live_usd))
+    "no cambio variacion de: $" + str(price_moved["variation"]) + " a la " + price_moved["trend"]
+    )
