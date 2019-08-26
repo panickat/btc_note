@@ -31,4 +31,6 @@ crontab -e
 * * * * * /Users/panic/.local/share/virtualenvs/py-OPFHogRf/bin/python /Users/panic/dev/py/alarm.py >/Users/panic/dev/py/log/stdout.log 2>/Users/panic/dev/py/log/stderr.log
 
 # correr freeze app echa con py2app
+https://py2app.readthedocs.io/en/latest/tutorial.html#create-a-setup-py-file
+
 * * * * * /Users/panic/dev/py/dist/btc_swing.app/Contents/MacOS/btc_swing >/Users/panic/dev/py/log/stdout.log 2>/Users/panic/dev/py/log/stderr.log

@@ -22,9 +22,9 @@ def outflow(course):
         values = (price_moved["variation"], price_moved["trend"])
 
     if course == "not_moved":
-        msg = "price_moved else: no cambio, variacion de: $%s, %s \n%s"
+        msg = "price_moved else: no cambio, variacion de: $%s, %s de: $%s\n%s"
         values = (price_moved["variation"],
-                  price_moved["trend"], time.strftime("%I:%M:%S"))
+                  price_moved["trend"], usd_swing, time.strftime("%I:%M:%S"))
 
     print(msg % values)
 
