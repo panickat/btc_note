@@ -4,6 +4,9 @@ import json
 import time
 
 usd_swing = 300
+last_usd = 0
+live_usd = 0
+live_mxn = 0
 
 def outflow(course):
     if course == "req_bitcoin_val()":
@@ -35,7 +38,6 @@ def req_bitcoin_val():
 
     outflow("req_bitcoin_val()")
 
-
 def get_usd_env():
     completed = subprocess.run(
         ["launchctl", "getenv", "usd"], stdout=subprocess.PIPE)
@@ -47,25 +49,8 @@ def get_usd_env():
         set_usd_env()
         return live_usd
 
-
 def set_usd_env():
     subprocess.run(["launchctl", "setenv", "usd", str(live_usd)])
-
-
-def price_move():
-    req_bitcoin_val()
-    global last_usd
-    last_usd = get_usd_env()
-    outflow("price_move()")
-
-    #If price swing out selected range 
-    if live_usd >= last_usd + usd_swing:
-        return {"move": True, "variation": live_usd - last_usd, "trend": "a la alsa"}
-    elif live_usd <= last_usd - usd_swing:
-        return {"move": True, "variation": last_usd - live_usd, "trend": "a la baja"}
-    else:
-        #If price swing inside selected range
-        return {"move": False, "variation": last_usd - live_usd, "trend": "dentro del rango"}
 
 def speech(price_moved):
     _usd = str(live_usd)[0:3]+"00"
@@ -77,6 +62,20 @@ def speech(price_moved):
 
     outflow("speech()")
 
+def price_move():
+    req_bitcoin_val()
+    global last_usd
+    last_usd = get_usd_env()
+    outflow("price_move()")
+
+    #If price swing out selected range
+    if live_usd >= last_usd + usd_swing:
+        return {"move": True, "variation": live_usd - last_usd, "trend": "a la alsa"}
+    elif live_usd <= last_usd - usd_swing:
+        return {"move": True, "variation": last_usd - live_usd, "trend": "a la baja"}
+    else:
+        #If price swing inside selected range
+        return {"move": False, "variation": last_usd - live_usd, "trend": "dentro del rango"}
 
 price_moved = price_move()
 speech(price_moved) if price_moved["move"] else outflow("not_moved")
