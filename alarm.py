@@ -3,7 +3,7 @@ import requests
 import json
 import time
 
-usd_swing = 300
+usd_swing = 1
 last_usd = 0
 live_usd = 0
 live_mxn = 0
@@ -18,11 +18,11 @@ def outflow(course):
         values = (last_usd)
 
     elif course == "speech()":
-        msg = "speech() variación de: $%s a la %s",
+        msg = "speech() variación de: $%s a la %s"
         values = (price_moved["variation"], price_moved["trend"])
 
     if course == "not_moved":
-        msg = "price_moved else: no cambio, variacion de: $%s %s \n%s"
+        msg = "price_moved else: no cambio, variacion de: $%s, %s \n%s"
         values = (price_moved["variation"],
                   price_moved["trend"], time.strftime("%I:%M:%S"))
 
