@@ -1,9 +1,10 @@
+from pync import Notifier
 import subprocess
 import requests
 import json
 import time
 
-usd_swing = 300
+usd_swing = 1
 last_usd = 0
 live_usd = 0
 live_mxn = 0
@@ -18,7 +19,7 @@ def outflow(course):
         values = (last_usd)
 
     elif course == "speech()":
-        msg = "speech() variación de: $%s a la %s"
+        msg = "speech() variación de: $%s %s"
         values = (price_moved["variation"], price_moved["trend"])
 
     if course == "not_moved":
@@ -52,6 +53,17 @@ def get_usd_env():
 def set_usd_env():
     subprocess.run(["launchctl", "setenv", "usd", str(live_usd)])
 
+def send_notification(price_moved):
+    if price_moved["trend"] == "a la alsa":
+        icon = "img/blue_bull_128.png"
+    elif price_moved["trend"] == "a la baja":
+        icon = "img/red_bear_128.png"
+
+    Notifier.notify(
+        "$ " + str(price_moved["variation"]) + " Dolares", title=price_moved["trend"],
+        appIcon=icon,
+        open='https://www.tradingview.com/chart/Cz3BHy7j/')
+
 def speech(price_moved):
     _usd = str(live_usd)[0:3]+"00"
     _mxn = str(live_mxn)[0:3]+"000"
@@ -60,6 +72,7 @@ def speech(price_moved):
         _usd, _mxn, price_moved["variation"], price_moved["trend"])
     subprocess.run(["say", "-r 185", to_speech])
 
+    send_notification(price_moved)
     outflow("speech()")
 
 def price_move():

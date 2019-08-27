@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "438713ae061a218932fa1bb44288ef64029ac9d7ad3bb7b9bbcab8ffa0bd9bcb"
+            "sha256": "47b6fa51cbac570be5652ff22a0d37f65ff0241b85f4c0270ffe168024b8c533"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -36,6 +36,10 @@
                 "sha256:ea8b7f6188e6fa117537c3df7da9fc686d485087abf6ac197f9c46432f7e4a3c"
             ],
             "version": "==2.8"
+        },
+        "pync": {
+            "git": "https://github.com/SeTeM/pync.git",
+            "ref": "1435d0204c0db646ae3f4fa9b0629278d0bb2969"
         },
         "requests": {
             "hashes": [

@@ -9,6 +9,7 @@ autopep8 = "*"
 
 [packages]
 requests = "*"
+pync = {git = "https://github.com/SeTeM/pync.git"}
 
 [requires]
 python_version = "3.7"

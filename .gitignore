@@ -2,3 +2,4 @@ log/**
 build/**
 dist/**
 setup.py
+img/stuff/**
