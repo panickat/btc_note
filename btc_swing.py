@@ -9,7 +9,7 @@ last_usd = 0
 live_usd = 0
 live_mxn = 0
 
-def outflow(course):
+def stdout_flow(course):
     if course == "req_bitcoin_val()":
         msg = "req_bitcoin_val(): live_usd $%s "
         values = (live_usd)
@@ -37,7 +37,7 @@ def req_bitcoin_val():
     live_usd = int(rq["bpi"]["USD"]["rate_float"])
     live_mxn = int(rq["bpi"]["MXN"]["rate_float"])
 
-    outflow("req_bitcoin_val()")
+    stdout_flow("req_bitcoin_val()")
 
 def get_usd_env():
     completed = subprocess.run(
@@ -59,10 +59,7 @@ def send_notification(price_moved):
     elif price_moved["trend"] == "a la baja":
         icon = "img/red_bear_128.png"
 
-    Notifier.notify(
-        "$ " + str(price_moved["variation"]) + " Dolares", title=price_moved["trend"],
-        appIcon=icon,
-        open='https://www.tradingview.com/chart/Cz3BHy7j/')
+    Notifier.notify("$ " + str(price_moved["variation"]) + " Dolares",title=price_moved["trend"],appIcon=icon,open='https://www.tradingview.com/chart/Cz3BHy7j/')
 
 def speech(price_moved):
     _usd = str(live_usd)[0:3]+"00"
@@ -73,13 +70,13 @@ def speech(price_moved):
     subprocess.run(["say", "-r 185", to_speech])
 
     send_notification(price_moved)
-    outflow("speech()")
+    stdout_flow("speech()")
 
 def price_move():
     req_bitcoin_val()
     global last_usd
     last_usd = get_usd_env()
-    outflow("price_move()")
+    stdout_flow("price_move()")
 
     #If price swing out selected range
     if live_usd >= last_usd + usd_swing:
@@ -91,4 +88,4 @@ def price_move():
         return {"move": False, "variation": last_usd - live_usd, "trend": "dentro del rango"}
 
 price_moved = price_move()
-speech(price_moved) if price_moved["move"] else outflow("not_moved")
+speech(price_moved) if price_moved["move"] else stdout_flow("not_moved")
