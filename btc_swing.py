@@ -22,17 +22,25 @@ def stdout_flow(course):
         msg = "speech() variación de: $%s %s"
         values = (price_moved["variation"], price_moved["trend"])
 
-    if course == "not_moved":
+    elif course == "not_moved":
         msg = "price_moved else: no cambio, variacion de: $%s, %s de: $%s\n%s\n"
         values = (price_moved["variation"],
                   price_moved["trend"], usd_swing, time.strftime("%I:%M:%S"))
+    
+    elif course == "Err_requests":
+        msg = "Sin internet ... %s\n"
+        values = (time.strftime("%I:%M:%S"))
 
     print(msg % values)
 
 def req_bitcoin_val():
-    rq = requests.get(
+    try:
+        rq = requests.get(
         'https://api.coindesk.com/v1/bpi/currentprice/mxn.json').json()
-
+    except requests.exceptions.ConnectionError:
+        stdout_flow("Err_requests")
+        raise SystemExit
+    
     global live_usd, live_mxn
     live_usd = int(rq["bpi"]["USD"]["rate_float"])
     live_mxn = int(rq["bpi"]["MXN"]["rate_float"])
