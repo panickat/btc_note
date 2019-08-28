@@ -4,7 +4,7 @@ import requests
 import json
 import time
 
-usd_swing = 1
+usd_swing = 300
 last_usd = 0
 live_usd = 0
 live_mxn = 0
@@ -23,7 +23,7 @@ def stdout_flow(course):
         values = (price_moved["variation"], price_moved["trend"])
 
     if course == "not_moved":
-        msg = "price_moved else: no cambio, variacion de: $%s, %s de: $%s\n%s"
+        msg = "price_moved else: no cambio, variacion de: $%s, %s de: $%s\n%s\n"
         values = (price_moved["variation"],
                   price_moved["trend"], usd_swing, time.strftime("%I:%M:%S"))
 
