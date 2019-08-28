@@ -4,9 +4,8 @@ correr el script en un entorno virtual
 >Launching subshell in virtual environment…
 . /Users/panic/.local/share/virtualenvs/py-OPFHogRf/bin/activate
 
-Se crea automatica mente una variable de entorno virtual llamada `usd`
-para revisar o modificar la variable
-`launchctl getenv/setenv`
+Se crea automatica mente una variable de entorno llamada `usd`
+para revisar o modificar la variable `launchctl getenv/setenv`
 
 ###### Para obtener un shell con el workflow virtual para el crontab
 `pipenv --py`
