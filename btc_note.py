@@ -4,7 +4,7 @@ import requests
 import json
 import time
 
-bounce_bounds = 1
+bounce_bounds = 300
 last_usd = 0
 live_usd = 0
 live_mxn = 0
