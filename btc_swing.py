@@ -4,7 +4,7 @@ import requests
 import json
 import time
 
-bounce_bounds = 1
+bounce_bounds = 300
 last_usd = 0
 live_usd = 0
 live_mxn = 0
@@ -22,13 +22,13 @@ def stdout_flow(course):
         msg = "get_price_shift(): last_usd $%s"
         values = (last_usd)
 
-    elif course == "speech()":
-        msg = "speech() variación de: $%s %s\n%s"
+    elif course == "crossing_bounds()":
+        msg = "crossing_bounds() variación de: $%s %s\n%s"
         values = (price_action["variation"],
                   price_action["trend"], t_now)
 
     elif course == "not_cross":
-        msg = "price_action else: no cambio, variacion de: $%s, %s límites de rebote de: $%s\n%s\n"
+        msg = "price_action in bounds: no cruso los limites, variacion de: $%s, %s límites de rebote de: $%s\n%s\n"
         values = (price_action["variation"],
                   price_action["trend"], bounce_bounds, t_now)
     
@@ -74,16 +74,20 @@ def send_notification():
 
     Notifier.notify("$ " + str(price_action["variation"]) + " Dolares",title=price_action["trend"],appIcon=icon,open='https://www.tradingview.com/chart/Cz3BHy7j/')
 
-def speech():
+
+def announcement(to_speech):
+    subprocess.run(["say", "-r 185", to_speech])
+
+def crossing_bounds():
     _usd = str(live_usd)[0:3]+"00"
     _mxn = str(live_mxn)[0:3]+"000"
 
     to_speech = "'El, bitcoin esta! en %s dolares. y en %s pesos, con variación de: %s dolares' %s" % (
         _usd, _mxn, price_action["variation"], price_action["trend"])
-    subprocess.run(["say", "-r 185", to_speech])
-
+    
+    announcement(to_speech)
     send_notification()
-    stdout_flow("speech()")
+    stdout_flow("crossing_bounds()")
 
 def get_price_shift():
     req_bitcoin_val()
@@ -94,12 +98,12 @@ def get_price_shift():
     #If price swing out selected range
     global price_action
     if live_usd >= last_usd + bounce_bounds:
-        price_action = {"in_bounds": True, "variation": live_usd - last_usd, "trend": "a la alza"}
+        price_action = {"in_bounds": False, "variation": live_usd - last_usd, "trend": "a la alza"}
     elif live_usd <= last_usd - bounce_bounds:
-        price_action = {"in_bounds": True, "variation": (last_usd - live_usd) * -1, "trend": "a la baja"}
+        price_action = {"in_bounds": False, "variation": (last_usd - live_usd) * -1, "trend": "a la baja"}
     else:
         #If price swing inside selected range
-        price_action = {"in_bounds": False, "variation": last_usd - live_usd}
+        price_action = {"in_bounds": True, "variation": last_usd - live_usd}
         if live_usd > last_usd:
             price_action["trend"] = "a la alza"
         elif live_usd < last_usd:
@@ -113,4 +117,4 @@ def send_alert():
         pass
     
 get_price_shift()
-speech() if price_action["in_bounds"] else stdout_flow("not_cross")
+stdout_flow("not_cross") if price_action["in_bounds"] else crossing_bounds()
