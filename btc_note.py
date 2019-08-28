@@ -15,6 +15,7 @@ drop_alert = [9500, 9200, 9090, 9000, 8900, 8700, 8500, 8300, 8100, 8000, ]
 
 def stdout_flow(course):
     t_now = time.strftime("%I:%M:%S")
+
     if course == "req_bitcoin_val()":
         msg = "req_bitcoin_val(): live_usd $%s "
         values = (live_usd)
@@ -30,8 +31,7 @@ def stdout_flow(course):
 
     elif course == "not_cross":
         msg = "price_action in bounds: no cruso los limites, variacion de: $%s, %s límites de rebote de: $%s\n%s\n"
-        values = (price_action["amount"],
-                  price_action["trend"], bounce_bounds, t_now)
+        values = (price_action["amount"], price_action["trend"], bounce_bounds, t_now)
     
     elif course == "Err_requests":
         msg = "Sin internet ... %s\n"
@@ -62,8 +62,8 @@ def get_usd_env():
         ["launchctl", "getenv", "usd"], stdout=subprocess.PIPE)
     usd_local_env = completed.stdout.decode('utf-8')
 
+    set_usd_env()
     if usd_local_env == "":
-        set_usd_env()
         return live_usd
     else:
         return int(usd_local_env)
@@ -112,7 +112,10 @@ def get_price_shift():
             price_action["amount"] = live_usd - last_usd
         elif live_usd < last_usd:
             price_action["trend"] = "a la baja"
-            price_action["amount"] = (last_usd - live_usd) * -1            
+            price_action["amount"] = (last_usd - live_usd) * -1
+        else:
+            price_action["trend"] = "not move"
+            price_action["amount"] = 0
 
 def check_alert():
     for price in rise_alert:
