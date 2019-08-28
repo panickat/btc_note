@@ -9,7 +9,8 @@ last_usd = 0
 live_usd = 0
 live_mxn = 0
 price_action = {}
-rise_alert = [10500, 10800,10965, 11100, 11265, 11300, 11500, 1765, 11900, 12100, 12300, 12500, 12800]
+rise_alert = [10500, 10800, 10965, 11100, 11265,
+              11300, 11500, 11765, 11900, 12100, 12300, 12500, 12800]
 drop_alert = [9500, 9200, 9090, 9000, 8900, 8700, 8500, 8300, 8100, 8000, ]
 
 
@@ -38,8 +39,8 @@ def stdout_flow(course):
         values = (t_now)
     
     elif course == "check_alert()":
-        msg = "Alerta de precio! en %s dolares %s\n"
-        values = (price_action["amount"],t_now)
+        msg = "Alerta de precio! %s"
+        values = (t_now)
 
     print(msg % values)
 
@@ -76,6 +77,8 @@ def send_notification():
         icon = "img/blue_bull_128.png"
     elif price_action["trend"] == "a la baja":
         icon = "img/red_bear_128.png"
+    else:
+        icon = "img/btc_move.png"
 
     Notifier.notify("$ " + str(price_action["amount"]) + " Dolares",title=price_action["trend"],appIcon=icon,open='https://www.tradingview.com/chart/Cz3BHy7j/')
 
@@ -96,8 +99,7 @@ def get_price_shift():
     req_bitcoin_val()
     global last_usd
     last_usd = get_usd_env()
-    stdout_flow("get_price_shift()")
-
+    
     #If price swing out selected range
     global price_action
     if live_usd >= last_usd + bounce_bounds:
@@ -116,6 +118,9 @@ def get_price_shift():
         else:
             price_action["trend"] = "not move"
             price_action["amount"] = 0
+    
+    stdout_flow("get_price_shift()")
+    check_alert()
 
 def check_alert():
     for price in rise_alert:
@@ -125,6 +130,7 @@ def check_alert():
     for price in drop_alert:
         if live_usd <= price:
             announcement("check_alert()")
+            return
     
 get_price_shift()
 stdout_flow("not_cross") if price_action["in_bounds"] else crossing_bounds()
