@@ -1,52 +1,43 @@
-###### Establecer una variable local en sistema
-https://www.schrodinger.com/kb/1842
-
-OS X 10.10
-To set an environment variable, enter the following command:
-launchctl setenv variable "value"
-To find out if an environment variable is set, use the following command:
-launchctl getenv variable
-To clear an environment variable, use the following command:
-launchctl unsetenv variable
-
 #### Como usar el script
-###### correr el script
-    pipenv shell
-    >Launching subshell in virtual environment…
-    >. /Users/panic/.local/share/virtualenvs/py-OPFHogRf/bin/activate
+correr el script en un entorno virtual
+`pipenv shell`
+>Launching subshell in virtual environment…
+. /Users/panic/.local/share/virtualenvs/py-OPFHogRf/bin/activate
 
-###### Instalacion de un cronjob
-    https://stackoverflow.com/questions/48990067/how-to-run-a-cron-job-with-pipenv
+Se crea automatica mente una variable de entorno virtual llamada `usd`
+para revisar o modificar la variable
+`launchctl getenv/setenv`
 
-###### Obtener un shell con el workflow virtual con 
-    pipenv --py
-    >/Users/panic/.local/share/virtualenvs/py-OPFHogRf/bin/python
+###### Para obtener un shell con el workflow virtual para el crontab
+`pipenv --py`
+>/Users/panic/.local/share/virtualenvs/py-OPFHogRf/bin/python
 
 ### Metodos para correr servicios
-#### Crontab
-    Agregar tarea a cronjob
-    * * * * * significa cada minuto
-    https://crontab.guru/#01_*_*_*_*
 
-        crontab -e
+##### Crontab
 
-    # correr .py en cron job
-    -& "ampersand" para correr en segundo plano
-    -Nesecita la ruta desde la raiz
+- [How to run a crontab with pipenv](https://stackoverflow.com/questions/48990067/how-to-run-a-cron-job-with-pipenv) 
+- [como hacer argumentos de tiempo en crontab](https://crontab.guru/#01_*_*_*_*)
 
+###### correr .py en crontab
+- & "ampersand" al final para correr en segundo plano
+- Nesecita la ruta desde la raiz
 
-    * * * * * /Users/panic/.local/share/virtualenvs/py-OPFHogRf/bin/python /Users/panic/dev/py/alarm.py >/Users/panic/dev/py/log/stdout.log 2>/Users/panic/dev/py/log/stderr.log &
+`crontab -e`
 
-    # correr freeze app echa con py2app 
-    https://py2app.readthedocs.io/en/latest/tutorial.html#create-a-setup-py-file
+    * * * * * /Users/panic/.local/share/virtualenvs/py-OPFHogRf/bin/python /Users/panic/dev/btc_note/alarm.py >/Users/panic/dev/btc_note/log/stdout.log 2>/Users/panic/dev/btc_note/log/stderr.log &
 
-        * * * * * /Users/panic/dev/py/dist/btc_swing.app/Contents/MacOS/btc_swing >/Users/panic/dev/py/log/stdout.log 2>/Users/panic/dev/py/log/stderr.log &
+###### correr freeze app echa con py2app en crontab
+[como usar py2app](https://py2app.readthedocs.io/en/latest/tutorial.html#create-a-setup-py-file)
 
-### Configurar servicio cron con un archivo Plist
+    * * * * * /Users/panic/dev/btc_note/dist/btc_swing.app/Contents/MacOS/btc_swing >/Users/panic/dev/btc_note/log/stdout.log 2>/Users/panic/dev/btc_note/log/stderr.log &
 
-    Guardar archivo en /Users/panic/Library/LaunchAgents
-    >`launchctl load/unload` foo.plist
-    >`plutil` Este comando "plutil ayuda a checar la sintaxis del archivo"
+##### Configurar servicio cron con un archivo Plist
+
+`launchctl load/unload` /Users/panic/Library/LaunchAgents/com.panic.btc_swing.plist
+`launchctl list | grep btc_swing` para revisar el estado del servicio
+
+`plutil` ayuda a checar la sintaxis del archivo
 
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" \
@@ -63,7 +54,7 @@ launchctl unsetenv variable
         This key is required.  -->
         <key>ProgramArguments</key>
         <array>
-        <string>/Users/panic/dev/py/dist/btc_swing.app/Contents/MacOS/btc_swing</string>
+        <string>/Users/panic/dev/btc_note/dist/btc_swing.app/Contents/MacOS/btc_swing</string>
         </array>
         
         <!-- This optional key specifies the user to run the job as. This key
@@ -79,10 +70,10 @@ launchctl unsetenv variable
         <true/>
 
         <key>StandardErrorPath</key>
-        <string>/Users/panic/dev/py/log/stderr.log</string>
+        <string>/Users/panic/dev/btc_note/log/stderr.log</string>
 
         <key>StandardOutPath</key>
-        <string>/Users/panic/dev/py/log/stdout.log</string>
+        <string>/Users/panic/dev/btc_note/log/stdout.log</string>
         
         <!-- low priority -->
         <key>Nice</key>
@@ -92,21 +83,18 @@ launchctl unsetenv variable
     </dict>
     </plist>
 
-#Notificaciones
-    pipenv install git+https://github.com/SeTeM/pync.git#egg=pync
-    brew install terminal-notifier #dependencia de ruby 
+###### Notificaciones
 
-"""
-opciones para notificaciones:
-https://weareopensource.me/python-osx/
-https://g3rv4.com/2015/08/macos-notifications-python-pycharm
-https://stackoverflow.com/questions/17651017/python-post-osx-notification
+`pipenv install git+https://github.com/SeTeM/pync.git#egg=pync`
+`brew install terminal-notifier` nesecita esta dependencia de ruby 
 
 
-https://pypi.org/project/pync/
-- https://github.com/julienXX/terminal-notifier
-- https://github.com/vjeantet/alerter
+###### opciones para notificaciones:
 
-to be able to communicate with you over other devices.
-https://github.com/dschep/ntfy    
-"""
+- [1](https://weareopensource.me/python-osx/)
+- [2](https://g3rv4.com/2015/08/macos-notifications-python-pycharm)
+- [3](https://stackoverflow.com/questions/17651017/python-post-osx-notification)
+- [pync](https://pypi.org/project/pync/)
+    - [notificaciones por comandos](https://github.com/julienXX/terminal-notifier)
+    - [notificaciones con acciones](https://github.com/vjeantet/alerter)
+- [to be able to communicate with you over other devices.](https://github.com/dschep/ntfy)
