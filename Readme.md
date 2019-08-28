@@ -29,12 +29,12 @@ para revisar o modificar la variable `launchctl getenv/setenv`
 ###### correr freeze app echa con py2app en crontab
 [como usar py2app](https://py2app.readthedocs.io/en/latest/tutorial.html#create-a-setup-py-file)
 
-    * * * * * /Users/panic/dev/btc_note/dist/btc_swing.app/Contents/MacOS/btc_swing >/Users/panic/dev/btc_note/log/stdout.log 2>/Users/panic/dev/btc_note/log/stderr.log &
+    * * * * * /Users/panic/dev/btc_note/dist/btc_note.app/Contents/MacOS/btc_note >/Users/panic/dev/btc_note/log/stdout.log 2>/Users/panic/dev/btc_note/log/stderr.log &
 
 ##### Configurar servicio cron con un archivo Plist
 
-`launchctl load/unload` /Users/panic/Library/LaunchAgents/com.panic.btc_swing.plist
-`launchctl list | grep btc_swing` para revisar el estado del servicio
+`launchctl load/unload` /Users/panic/Library/LaunchAgents/com.panic.btc_note.plist
+`launchctl list | grep btc_note` para revisar el estado del servicio
 
 `plutil` ayuda a checar la sintaxis del archivo
 
@@ -47,13 +47,13 @@ para revisar o modificar la variable `launchctl getenv/setenv`
         <!-- Contains a unique string that identifies your daemon to launchd.
         This key is required. -->
         <key>Label</key>
-        <string>com.panic.btc_swing</string>
+        <string>com.panic.btc_note</string>
 
         <!-- Contains the arguments [to exec()] used to launch your daemon.
         This key is required.  -->
         <key>ProgramArguments</key>
         <array>
-        <string>/Users/panic/dev/btc_note/dist/btc_swing.app/Contents/MacOS/btc_swing</string>
+        <string>/Users/panic/dev/btc_note/dist/btc_note.app/Contents/MacOS/btc_note</string>
         </array>
         
         <!-- This optional key specifies the user to run the job as. This key
