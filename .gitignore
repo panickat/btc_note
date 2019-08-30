@@ -1,6 +1,6 @@
-log/**
+**log/**
 build/**
 dist/**
 setup.py
-img/stuff/**
+assets/img/stuff/**
 .vscode
