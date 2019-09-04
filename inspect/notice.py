@@ -4,7 +4,7 @@ import requests
 import json
 import time
 
-bounce_bounds = 300
+bounce_bounds = 140
 last_usd = 0
 live_usd = 0
 live_mxn = 0
@@ -12,7 +12,6 @@ price_action = {}
 rise_alert = [10500, 10800, 10965, 11100, 11265,
               11300, 11500, 11765, 11900, 12100, 12300, 12500, 12800]
 drop_alert = [9500, 9200, 9090, 9000, 8900, 8700, 8500, 8300, 8100, 8000, ]
-
 
 def stdout_flow(course):
     t_now = time.strftime("%I:%M:%S")
@@ -41,6 +40,13 @@ def stdout_flow(course):
     elif course == "check_alert()":
         msg = "Alerta de precio! %s"
         values = (t_now)
+    
+    elif course == "announcement()":
+        msg = "announcement() %s"
+        values = (t_now)
+    else:
+        msg = "unknown stdout_flow call %s"
+        values = ("")
 
     print(msg % values)
 
@@ -82,18 +88,28 @@ def send_notification():
 
     Notifier.notify("$ " + str(price_action["amount"]) + " Dolares",title=price_action["trend"],appIcon=icon,open='https://www.tradingview.com/chart/Cz3BHy7j/')
 
+def rounding(value,currency):
+    if live_usd >= 10000 and currency=="usd":
+        return str(value)[0:3]+"00"
+    elif live_usd < 10000 and currency == "usd":
+        return str(value)[0:2]+"00"
 
-def announcement(stdout):
-    _usd = str(live_usd)[0:3]+"00"
-    _mxn = str(live_mxn)[0:3]+"000"
+    if live_mxn >= 100000 and currency == "mxn":
+        return str(value)[0:3]+"000"
+    elif live_mxn < 100000 and currency == "mxn":
+        return str(value)[0:2]+"000"
 
+def announcement():
+    _usd = rounding(live_usd,"usd")
+    _mxn = rounding(live_mxn,"mxn")
+    
     to_speech = "'El, bitcoin esta! en %s dolares. y en %s pesos, con variación de: %s dolares' %s" % (_usd, _mxn, price_action["amount"], price_action["trend"])    
     subprocess.run(["say", "-r 185", to_speech])
     send_notification()
-    stdout_flow(stdout)
+    stdout_flow("announcement()")
 
 def crossing_bounds():    
-    announcement("crossing_bounds()")
+    announcement()
 
 def get_price_shift():
     req_bitcoin_val()
@@ -123,14 +139,19 @@ def get_price_shift():
     check_alert()
 
 def check_alert():
+    rise_alert.sort(reverse=True)
+    drop_alert.sort(reverse=True)
+
     for price in rise_alert:
         if live_usd >= price:
-            announcement("check_alert()")
+            announcement()
             return
     for price in drop_alert:
         if live_usd <= price:
-            announcement("check_alert()")
+            announcement()
             return
     
 get_price_shift()
 stdout_flow("not_cross") if price_action["in_bounds"] else crossing_bounds()
+ 
+#* * * * * /Users/panic/.local/share/virtualenvs/py-OPFHogRf/bin/python /Users/panic/dev/btc_note/inspect/notice.py 1>>/Users/panic/dev/btc_note/log/stdout.log 2>/Users/panic/dev/btc_note/log/stderr.log &

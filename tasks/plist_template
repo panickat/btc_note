@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" \
+"http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+
+    <!-- Contains a unique string that identifies your daemon to launchd.
+    This key is required. -->
+    <key>Label</key>
+    <string>com.panic.btc_note</string>
+
+    <!-- Contains the arguments [to exec()] used to launch your daemon.
+    This key is required.  -->
+    <key>ProgramArguments</key>
+    <array>
+    <string>/Users/panic/dev/btc_note/dist/btc_note.app/Contents/MacOS/btc_note</string>
+    </array>
+    
+    <!-- This optional key specifies the user to run the job as. This key
+    is only applicable when launchd is running as root. -->
+    <key>UserName</key>
+    <string>panic</string>
+    
+    <!-- Run every 12 hours -->
+    <key>StartInterval</key>
+    <integer>60</integer>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/panic/dev/btc_note/log/stderr.log</string>
+
+    <key>StandardOutPath</key>
+    <string>/Users/panic/dev/btc_note/log/stdout.log</string>
+    
+    <!-- low priority -->
+    <key>Nice</key>
+    <integer>20</integer>
+    <key>LowPriorityIO</key>
+    <true/>
+</dict>
+</plist>

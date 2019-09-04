@@ -11,6 +11,7 @@ autopep8 = "*"
 requests = "*"
 pync = {git = "https://github.com/SeTeM/pync.git"}
 invoke = "*"
+psycopg2 = "*"
 
 [requires]
 python_version = "3.7"
