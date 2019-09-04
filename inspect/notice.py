@@ -4,7 +4,7 @@ import requests
 import json
 import time
 
-bounce_bounds = 140
+bounce_bounds = 99
 last_usd = 0
 live_usd = 0
 live_mxn = 0
@@ -102,7 +102,7 @@ def rounding(value,currency):
 def announcement():
     _usd = rounding(live_usd,"usd")
     _mxn = rounding(live_mxn,"mxn")
-    
+    #system("osascript -e 'set Volume 1'")
     to_speech = "'El, bitcoin esta! en %s dolares. y en %s pesos, con variación de: %s dolares' %s" % (_usd, _mxn, price_action["amount"], price_action["trend"])    
     subprocess.run(["say", "-r 185", to_speech])
     send_notification()

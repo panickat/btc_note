@@ -1,51 +1,66 @@
 class DB:
     from json import dumps
+    import psycopg2
+
     def __init__(self):
-        import psycopg2
-        self.cnn = psycopg2.connect(database="btc_note",
-                                user="panic",
-                                host="localhost",
-                                password="Jajaja123",
-                                port="5432")                     
+        self.cnn = DB.psycopg2.connect(
+            database="btc_note",
+            user="panic",
+            host="localhost",
+            password="Jajaja123",
+            port="5432")
         self.cursor = self.cnn.cursor()
 
-    def close(self):
-        self.cnn.commit()
-        self.cursor.close()
-        self.cnn.close()
-    def create_usrs(self):
-        self.cursor.execute("CREATE TABLE IF NOT EXISTS usrs (id serial PRIMARY KEY,name char(11), alarms json);")
-    def set_alerts(self,alerts):
-        s = ['(\'%s\')' % (DB.dumps(r)) for r in rise_alert]
-        sql = "insert into usrs (alarms) values %s;" % (", ".join(s))
-        
-        self.cursor.execute(sql)
-        self.close()
-    def get_alerts(self,usr_id):
-        sql = "Select * from alarms where usr_id="+str(usr_id)
-        self.cursor.execute(sql)
-        return self.cursor.fetchall()
+    def send_query(self,sql, fetch=False):
+        if self.cnn:
+            f = None
+            self.cursor.execute(sql+";")
+            if fetch: f = self.cursor.fetchone()
 
-rise_alert = (
-    {"currency": "usd", "price": 10800},
-    {"currency": "usd", "price": 10900},
-    {"currency": "usd", "price": 11000},
-    {"currency": "usd", "price": 11100},
-    {"currency": "usd", "price": 11200},
-    {"currency": "usd", "price": 11300},
-    {"currency": "usd", "price": 11450},
-    {"currency": "usd", "price": 11650}
-)
-dump_alert = [
-    {"currency": "usd", "price": 9500},
-    {"currency": "usd", "price": 9400},
-    {"currency": "usd", "price": 9300},
-    {"currency": "usd", "price": 9200},
-    {"currency": "usd", "price": 9100},
-    {"currency": "usd", "price": 9000},
-    {"currency": "usd", "price": 8900},
-    {"currency": "usd", "price": 8800}
-    ]
+            self.cnn.commit()
+            self.cursor.close()
+            self.cnn.close()
+            return f
 
-db = DB()
-db.set_alerts(rise_alert)
+    def create_tbl(self):
+        sql = "CREATE TABLE IF NOT EXISTS usrs (id serial PRIMARY KEY,name char(11), alarms json)"
+        self.send_query(sql)
+
+    def insert_alerts(self, alerts):
+        sql = "insert into users (alarms) values ('%s')" % (DB.dumps(alerts))
+        self.send_query(sql)
+
+    def get_alerts(self, user_id):
+        sql = "select alarms from users where id = %s;" % (user_id)
+        return self.send_query(sql, fetch=True)
+
+    def update_alerts(self,name,alerts):
+        sql = "update users set alarms = '%s' where name = '%s'" % (
+            DB.dumps(alerts), name)
+        self.send_query(sql)
+
+"""
+consultas en tabla json
+    insert into usrs (alarms) values ('{"rise":{"currency":"mxn","price":100}}'),('{"dump":{"currency":"mxn","price":10}}')
+
+    insert into users (alarms) values 
+        ('{"rise":[
+            {"currency":"cny","price":100},
+            {"currency":"cny","price":99}
+            ],
+        "dump":[
+            {"currency":"cny","price":2},
+            {"currency":"cny","price":1}
+            ]
+        }')
+
+    select json_array_elements(alarms->'dump')->'price' from users
+
+Crea multiples usuarios(filas) por cada alarma guardada
+    alerts = (
+        {"currency":"usd","price":10800},
+        {"currency":"usd","price":10900}
+    )        
+    s = ['(\'%s\')' % (DB.dumps(r)) for r in alerts]
+    sql = "insert into users (alarms) values %s;" % (", ".join(s))
+"""
