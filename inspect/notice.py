@@ -132,7 +132,7 @@ def get_price_shift():
             price_action["trend"] = "a la baja"
             price_action["amount"] = (last_usd - live_usd) * -1
         else:
-            price_action["trend"] = "not move"
+            price_action["trend"] = "sin tendencia"
             price_action["amount"] = 0
     
     stdout_flow("get_price_shift()")

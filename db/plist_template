@@ -7,32 +7,32 @@
     <!-- Contains a unique string that identifies your daemon to launchd.
     This key is required. -->
     <key>Label</key>
-    <string>com.panic.btc_note</string>
+    <string>com.user_name.app_name</string>
 
     <!-- Contains the arguments [to exec()] used to launch your daemon.
     This key is required.  -->
     <key>ProgramArguments</key>
     <array>
-    <string>/Users/panic/dev/btc_note/dist/btc_note.app/Contents/MacOS/btc_note</string>
+    <string>main_dir/dist/app_name.app/Contents/MacOS/app_name</string>
     </array>
     
     <!-- This optional key specifies the user to run the job as. This key
     is only applicable when launchd is running as root. -->
     <key>UserName</key>
-    <string>panic</string>
+    <string>user_name</string>
     
     <!-- Run every 12 hours -->
     <key>StartInterval</key>
-    <integer>60</integer>
+    <integer>run_time_interval</integer>
 
     <key>RunAtLoad</key>
     <true/>
 
     <key>StandardErrorPath</key>
-    <string>/Users/panic/dev/btc_note/log/stderr.log</string>
+    <string>main_dir/log/stderr.log</string>
 
     <key>StandardOutPath</key>
-    <string>/Users/panic/dev/btc_note/log/stdout.log</string>
+    <string>main_dir/log/stdout.log</string>
     
     <!-- low priority -->
     <key>Nice</key>
