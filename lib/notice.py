@@ -19,15 +19,16 @@ class Notifications:
         elif live_usd < 10000 and currency == "usd":
             return str(value)[0:2]+"00"
 
+        # Agregar un bloque if-elif por cada tipo de moneda
         if btc_pair >= 100000 and currency == "mxn":
             return str(value)[0:3]+"000"
         elif btc_pair < 100000 and currency == "mxn":
             return str(value)[0:2]+"000"
 
     @staticmethod
-    def announcement(pair_name):
+    def announcement():
         _usd = Btc.rounding(live_usd, "usd")
-        _pair = Btc.rounding(btc_pair, pair_name)
+        _pair = Btc.rounding(btc_pair, Btc.pair_name)
         Btc.subprocess.run(["osascript", "-e", "set Volume 1.6"])
         
         to_speech = "'El, bitcoin esta! en %s dolares. y en %s pesos, con variación de: %s dolares' %s" % (
@@ -44,10 +45,10 @@ class Btc(Notifications):
     bounce_bounds = 99
 
     @staticmethod
-    def req_bitcoin(pair_name):
+    def req_bitcoin():
         try:
             rq = Btc.requests.get(
-            'https://api.coindesk.com/v1/bpi/currentprice/'+pair_name+'.json').json()
+            'https://api.coindesk.com/v1/bpi/currentprice/'+Btc.pair_name+'.json').json()
         except Btc.requests.exceptions.ConnectionError:
             print("re_bitcoin: Sin internet")
             raise SystemExit
@@ -74,12 +75,12 @@ class Btc(Notifications):
             ["launchctl", "setenv", "usd", str(live_usd)])
 
     @staticmethod
-    def crossing_bounds(pair_name):    
-        Btc.announcement(pair_name)
+    def crossing_bounds():    
+        Btc.announcement()
 
     @staticmethod
-    def get_price_shift(user):
-        Btc.req_bitcoin(user.pair_name)
+    def get_price_shift():
+        Btc.req_bitcoin()
         global last_usd
         last_usd = Btc.get_usd_env()
         
@@ -102,32 +103,45 @@ class Btc(Notifications):
                 price_action["trend"] = "sin tendencia"
                 price_action["amount"] = 0
         
-        Btc.check_alert(user)
+        Btc.check_alert()
         return price_action
 
     @staticmethod
-    def check_alert(user):
-        rise_alert = [alert["price"] for alert in user.alarms["rise"]]
-        dump_alert = [alert["price"] for alert in user.alarms["dump"]]
+    def check_alert():
+        rise_alert = [alert["price"] for alert in Btc.alarms["rise"]]
+        dump_alert = [alert["price"] for alert in Btc.alarms["dump"]]
         rise_alert.sort(reverse=True)
         dump_alert.sort(reverse=True)
         
 
         for price in rise_alert:
             if live_usd >= price:
-                Btc.announcement(user.pair_name)
+                Btc.announcement()
                 return
         for price in dump_alert:
             if live_usd <= price:
-                Btc.announcement(user.pair_name)
+                Btc.announcement()
                 return
 
-class User:
-    from .db.db_file import DB
-    
-    def __init__(self,user):
-        db = User.DB()
-        row = db.get_alerts(user)
-        self.user = user
-        self.pair_name = row[0]
-        self.alarms = row[1]
+
+class User(Btc):
+    def __init__(self,**kwargs):
+        if kwargs.get("db"):
+            Btc.db = kwargs.get("db")
+
+        me = Btc.db.get_user(kwargs.get("name"))
+        Btc.name = kwargs.get("name")
+        Btc.pair_name = me[0]
+        Btc.alarms = me[1]
+        
+        User.status()
+
+    @staticmethod    
+    def status():
+        Btc.get_price_shift()
+
+    @staticmethod
+    def insert(name,pair, alerts,db):
+        db.insert(name,pair,alerts)
+
+

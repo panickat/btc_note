@@ -1,4 +1,4 @@
-class DB:
+class DB():
     from json import dumps
     import psycopg2
 
@@ -9,31 +9,31 @@ class DB:
             host="localhost",
             password="Jajaja123",
             port="5432")
-        self.cursor = self.cnn.cursor()
-
+        
     def send_query(self,sql, fetch=False):
         if self.cnn:
-            f = None
-            self.cursor.execute(sql+";")
-            if fetch: f = self.cursor.fetchone()
+            row = None
+            cursor = self.cnn.cursor()
+            cursor.execute(sql+";")
+            if fetch: row = cursor.fetchone()
 
             self.cnn.commit()
-            self.cursor.close()
-            self.cnn.close()
-            return f
+            cursor.close() # lightweight obj
+            #self.cnn.close()   # not lightweight obj
+            return row
 
     def create_tbl(self):
         sql = "CREATE TABLE IF NOT EXISTS usrs (id serial PRIMARY KEY, name char(11), pair char(3), alarms json)"
         self.send_query(sql)
 
-    def insert_alerts(self,pair, alerts):
-        sql = "insert into users (pair,alarms) values ('%s','%s')" % (pair, DB.dumps(alerts))
+    def insert(self,name,pair, alerts):
+        sql = "insert into users (name,pair,alarms) values ('%s','%s','%s')" % (name,pair, DB.dumps(alerts))
         self.send_query(sql)
 
-    def get_alerts(self, name):
+    def get_user(self, name):
         sql = "select pair,alarms from users where name = '%s'" % (name)
         return self.send_query(sql, fetch=True)
-
+        
     def update_alerts(self,pair,alerts,name):
         sql = "update users set pair = '%s', alarms = '%s' where name = '%s'" % (pair,DB.dumps(alerts),name)
         self.send_query(sql)
