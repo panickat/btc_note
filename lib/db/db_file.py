@@ -23,20 +23,19 @@ class DB:
             return f
 
     def create_tbl(self):
-        sql = "CREATE TABLE IF NOT EXISTS usrs (id serial PRIMARY KEY,name char(11), alarms json)"
+        sql = "CREATE TABLE IF NOT EXISTS usrs (id serial PRIMARY KEY, name char(11), pair char(3), alarms json)"
         self.send_query(sql)
 
-    def insert_alerts(self, alerts):
-        sql = "insert into users (alarms) values ('%s')" % (DB.dumps(alerts))
+    def insert_alerts(self,pair, alerts):
+        sql = "insert into users (pair,alarms) values ('%s','%s')" % (pair, DB.dumps(alerts))
         self.send_query(sql)
 
-    def get_alerts(self, user_id):
-        sql = "select alarms from users where id = %s;" % (user_id)
+    def get_alerts(self, name):
+        sql = "select pair,alarms from users where name = '%s'" % (name)
         return self.send_query(sql, fetch=True)
 
-    def update_alerts(self,name,alerts):
-        sql = "update users set alarms = '%s' where name = '%s'" % (
-            DB.dumps(alerts), name)
+    def update_alerts(self,pair,alerts,name):
+        sql = "update users set pair = '%s', alarms = '%s' where name = '%s'" % (pair,DB.dumps(alerts),name)
         self.send_query(sql)
 
 """

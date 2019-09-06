@@ -1,4 +1,5 @@
 class Notifications:
+    from pync import Notifier
     @staticmethod
     def send_notification():
         if price_action["trend"] == "a la alza":
@@ -27,33 +28,26 @@ class Notifications:
     def announcement(pair_name):
         _usd = Btc.rounding(live_usd, "usd")
         _pair = Btc.rounding(btc_pair, pair_name)
-        #system("osascript -e 'set Volume 1'")
+        Btc.subprocess.run(["osascript", "-e", "set Volume 1.6"])
+        
         to_speech = "'El, bitcoin esta! en %s dolares. y en %s pesos, con variación de: %s dolares' %s" % (
             _usd, _pair, price_action["amount"], price_action["trend"])
         Btc.subprocess.run(["say", "-r 185", to_speech])
         Btc.send_notification()
 
 class Btc(Notifications):
-    from pync import Notifier
     import subprocess
     import requests
     import json
     import time
 
     bounce_bounds = 99
-    last_usd = 0
-    live_usd = 0
-    btc_pair = 0
-    price_action = {}
-    rise_alert = [10500, 10800, 10965, 11100, 11265,
-                11300, 11500, 11765, 11900, 12100, 12300, 12500, 12800]
-    drop_alert = [9500, 9200, 9090, 9000, 8900, 8700, 8500, 8300, 8100, 8000, ]
 
     @staticmethod
-    def req_bitcoin_val():
+    def req_bitcoin(pair_name):
         try:
             rq = Btc.requests.get(
-            'https://api.coindesk.com/v1/bpi/currentprice/'+Btc.pair_name+'.json').json()
+            'https://api.coindesk.com/v1/bpi/currentprice/'+pair_name+'.json').json()
         except Btc.requests.exceptions.ConnectionError:
             print("re_bitcoin: Sin internet")
             raise SystemExit
@@ -80,13 +74,12 @@ class Btc(Notifications):
             ["launchctl", "setenv", "usd", str(live_usd)])
 
     @staticmethod
-    def crossing_bounds():    
-        Btc.announcement(Btc.pair_name)
+    def crossing_bounds(pair_name):    
+        Btc.announcement(pair_name)
 
     @staticmethod
-    def get_price_shift(pair):
-        Btc.pair_name=pair
-        Btc.req_bitcoin_val()
+    def get_price_shift(user):
+        Btc.req_bitcoin(user.pair_name)
         global last_usd
         last_usd = Btc.get_usd_env()
         
@@ -109,21 +102,32 @@ class Btc(Notifications):
                 price_action["trend"] = "sin tendencia"
                 price_action["amount"] = 0
         
-        Btc.check_alert()
+        Btc.check_alert(user)
+        return price_action
 
     @staticmethod
-    def check_alert():
-        Btc.rise_alert.sort(reverse=True)
-        Btc.drop_alert.sort(reverse=True)
+    def check_alert(user):
+        rise_alert = [alert["price"] for alert in user.alarms["rise"]]
+        dump_alert = [alert["price"] for alert in user.alarms["dump"]]
+        rise_alert.sort(reverse=True)
+        dump_alert.sort(reverse=True)
+        
 
-        for price in Btc.rise_alert:
+        for price in rise_alert:
             if live_usd >= price:
-                Btc.announcement(Btc.pair_name)
+                Btc.announcement(user.pair_name)
                 return
-        for price in Btc.drop_alert:
+        for price in dump_alert:
             if live_usd <= price:
-                Btc.announcement(Btc.pair_name)
+                Btc.announcement(user.pair_name)
                 return
 
-Btc.get_price_shift("mxn")
-"no cruso los bordes" if price_action["in_bounds"] else Btc.crossing_bounds()
+class User:
+    from .db.db_file import DB
+    
+    def __init__(self,user):
+        db = User.DB()
+        row = db.get_alerts(user)
+        self.user = user
+        self.pair_name = row[0]
+        self.alarms = row[1]
